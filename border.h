@@ -19,6 +19,7 @@ class Border
         void setBorder(std::string);
         void setName(std::string);
         std::string getName();
+        std::string getBorder();
 };
 
 #endif

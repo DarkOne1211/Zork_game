@@ -21,22 +21,22 @@ void Room::setDescription(string description)
     this->description = description;
 }
 
-void Room::setRoomBorders(Border roomBorders)
+void Room::setRoomBorders(Border* roomBorders)
 {
     this->RoomBorders.push_back(roomBorders);
 }
 
-void Room::setRoomContainers(Container RoomContainers)
+void Room::setRoomContainers(Container* RoomContainers)
 {
     this->RoomContainers.push_back(RoomContainers);
 }
 
-void Room::setRoomItems(Item RoomItems)
+void Room::setRoomItems(Item* RoomItems)
 {
     this->RoomItems.push_back(RoomItems);
 }
 
-void Room::setRoomCreatures(Creature RoomCreatures)
+void Room::setRoomCreatures(Creature* RoomCreatures)
 {
     this->RoomCreatures.push_back(RoomCreatures);
 }
@@ -61,22 +61,22 @@ string Room::getDescription()
     return this->description;
 }
 
-vector<Border> Room::getBorders()
+vector<Border*> Room::getBorders()
 {
     return this->RoomBorders;
 }
 
-vector<Container> Room::getRoomContainers()
+vector<Container*> Room::getRoomContainers()
 {
     return this->RoomContainers;
 }
 
-vector<Item> Room::getRoomItems()
+vector<Item*> Room::getRoomItems()
 {
     return this->RoomItems;
 }
 
-vector<Creature> Room::getRoomCreatures()
+vector<Creature*> Room::getRoomCreatures()
 {
     return this->RoomCreatures;
 }

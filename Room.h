@@ -15,10 +15,10 @@ class Room
         string status;
         string type;
         string description;
-        vector<Border> RoomBorders;
-        vector<Container> RoomContainers;
-        vector<Item> RoomItems;
-        vector<Creature> RoomCreatures;
+        vector<Border*> RoomBorders;
+        vector<Container*> RoomContainers;
+        vector<Item*> RoomItems;
+        vector<Creature*> RoomCreatures;
         //add triggers later
         
     public:
@@ -28,19 +28,19 @@ class Room
         void setStatus(string);
         void setType(string);
         void setDescription(string);
-        void setRoomBorders(Border);
-        void setRoomContainers(Container);
-        void setRoomItems(Item);
-        void setRoomCreatures(Creature);
+        void setRoomBorders(Border*);
+        void setRoomContainers(Container*);
+        void setRoomItems(Item*);
+        void setRoomCreatures(Creature*);
 
         string getName();
         string getStatus();
         string getType();
         string getDescription();
-        vector<Border> getBorders();
-        vector<Container> getRoomContainers();
-        vector<Item> getRoomItems();
-        vector<Creature> getRoomCreatures();
+        vector<Border*> getBorders();
+        vector<Container*> getRoomContainers();
+        vector<Item*> getRoomItems();
+        vector<Creature*> getRoomCreatures();
 };
 
 #endif

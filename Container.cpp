@@ -18,7 +18,7 @@ void Container::setAccept(string accept)
 {
     this->accept.push_back(accept);
 }
-void Container::setContainerItems(Item ContainerItems)
+void Container::setContainerItems(Item* ContainerItems)
 {
     this->ContainerItems.push_back(ContainerItems);
 }
@@ -39,7 +39,7 @@ vector<string> Container::getAccept()
 {
     return this->accept;
 }
-vector<Item> Container::getContainerItems()
+vector<Item*> Container::getContainerItems()
 {
     return this->ContainerItems;
 }

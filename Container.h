@@ -13,7 +13,7 @@ class Container
         string status;
         string description;
         vector<string> accept;
-        vector<Item> ContainerItems;
+        vector<Item*> ContainerItems;
         // add trigger later
     public:
         Container();
@@ -22,13 +22,13 @@ class Container
         void setStatus(string);
         void setDescription(string);
         void setAccept(string);
-        void setContainerItems(Item);
+        void setContainerItems(Item*);
         
         string getName();
         string getStatus();
         string getDescription();
         vector<string> getAccept();
-        vector<Item> getContainerItems();
+        vector<Item*> getContainerItems();
 };
 
 #endif
