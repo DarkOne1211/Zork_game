@@ -205,7 +205,7 @@ void interpretXmlString(std::string gameXml)
     }
 
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
-    //printRoom(allRooms);
+    printRoom(allRooms);
 }
 
 // Finds the container address using the name
@@ -321,8 +321,6 @@ void printRoom(vector<Room> Rooms)
         }
 
         printContainer(Rooms[i].getRoomContainers());
-        printCreatures(Rooms[i].getRoomCreatures());
-        printItems(Rooms[i].getRoomItems());
     } 
 }
 //------------------------------------------------------------------------------------------
