@@ -253,4 +253,76 @@ int findCreatureAddress(vector<Creature> ReadItems, string name)
 
 //-----------------------------------TEST FUNCTIONS-----------------------------------------
 
+void printItems(vector<int> positions)
+{
+    int size = positions.size();
+    for (int i = 0; i < size; i++)
+    {
+        cout << allItems[positions[i]].getName() << endl;
+        cout << allItems[positions[i]].getStatus() << endl;
+        cout << allItems[positions[i]].getDescription() << endl;
+        cout << allItems[positions[i]].getWriting() << endl;
+        for (int j = 0; j < allItems[positions[i]].getTurnon().size(); j++)
+        {
+            cout << allItems[positions[i]].getTurnon()[j] << endl;
+        }   
+    }
+}
+
+void printCreatures(vector<int> positions)
+{
+    int size = positions.size();
+    for(int i = 0; i < size; i++)
+    {
+        cout << allCreatures[positions[i]].getName() << endl;
+        cout << allCreatures[positions[i]].getStatus() << endl;
+        cout << allCreatures[positions[i]].getDescription() << endl;
+        for (int j = 0; j < allCreatures[positions[i]].getVulnerability().size(); j++)
+        {
+            cout << allCreatures[positions[i]].getVulnerability()[j] << endl;
+        }
+        for (int j = 0; j < allCreatures[positions[i]].getAttackAction().size(); j++)
+        {
+            cout << allCreatures[positions[i]].getAttackAction()[j] << endl;
+        }
+    }
+}
+
+void printContainer(vector<int> positions)
+{
+    int size = positions.size();
+    for (int i = 0; i < size; i++)
+    {
+        cout << allContainers[positions[i]].getName() << endl;
+        cout << allContainers[positions[i]].getStatus() << endl;
+        cout << allContainers[positions[i]].getDescription() << endl;
+        for (int j = 0; j < allContainers[positions[i]].getAccept().size(); j++)
+        {
+            cout << allContainers[positions[i]].getAccept()[j] << endl;
+        }
+        printItems(allContainers[positions[i]].getContainerItems());
+    }    
+}
+
+void printRoom(vector<Room> Rooms)
+{
+    int Roomsize = Rooms.size();
+    for(int i = 0; i < Roomsize; i++)
+    {
+        cout<< Rooms[i].getName() << endl;
+        cout<< Rooms[i].getStatus() << endl;
+        cout<< Rooms[i].getType() << endl;
+        cout<< Rooms[i].getDescription() << endl;
+
+        for(int j = 0; j < Rooms[i].getBorders().size(); j++)
+        {
+            cout<< allBorders[Rooms[i].getBorders()[j]].getName() << endl;
+            cout<< allBorders[Rooms[i].getBorders()[j]].getBorder() << endl;
+        }
+
+        printContainer(Rooms[i].getRoomContainers());
+        printCreatures(Rooms[i].getRoomCreatures());
+        printItems(Rooms[i].getRoomItems());
+    } 
+}
 //------------------------------------------------------------------------------------------
