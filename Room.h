@@ -7,6 +7,7 @@
 #include "Creature.h"
 #include "border.h"
 #include "Container.h"
+#include "Trigger.h"
 
 class Room
 {
@@ -19,6 +20,7 @@ class Room
         vector<int> RoomContainers;
         vector<int> RoomItems;
         vector<int> RoomCreatures;
+        vector<int> RoomTriggers;
         //add triggers later
         
     public:
@@ -32,6 +34,7 @@ class Room
         void setRoomContainers(int);
         void setRoomItems(int);
         void setRoomCreatures(int);
+        void setRoomTriggers(int);
 
         string getName();
         string getStatus();
@@ -41,6 +44,7 @@ class Room
         vector<int> getRoomContainers();
         vector<int> getRoomItems();
         vector<int> getRoomCreatures();
+        vector<int> getRoomTriggers();
 };
 
 #endif

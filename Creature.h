@@ -14,7 +14,9 @@ class Creature
         string description;
         vector<string> vulnerability;
         vector<string> attackActions;
+        vector<int> creatureTriggers;
         // Add trigger later
+
     public:
         Creature();
         virtual ~Creature();
@@ -23,12 +25,14 @@ class Creature
         void setDescription(string);
         void setVulnerability(string);
         void setAttackActions(string);
+        void setCreatureTriggers(int);
 
         string getName();
         string getStatus();
         string getDescription();
         vector<string> getVulnerability();
         vector<string> getAttackAction();
+        vector<int> getCreatureTriggers();
 };
 
 #endif

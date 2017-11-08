@@ -41,6 +41,11 @@ void Room::setRoomCreatures(int RoomCreatures)
     this->RoomCreatures.push_back(RoomCreatures);
 }
 
+void Room::setRoomTriggers(int Triggers) 
+{
+    this->RoomTriggers.push_back(Triggers);
+}
+
 string Room::getName()
 {
     return this->name;
@@ -79,4 +84,9 @@ vector<int> Room::getRoomItems()
 vector<int> Room::getRoomCreatures()
 {
     return this->RoomCreatures;
+}
+
+vector<int> Room::getRoomTriggers()
+{
+    return this->RoomTriggers;
 }

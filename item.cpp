@@ -28,6 +28,11 @@ void Item::setTurnon(std::string turnon)
     this->turnon.push_back(turnon);
 }
 
+void Item::setItemTrigger(int trigger)
+{
+    this->itemTrigger.push_back(trigger);
+}
+
 std::string Item::getName()
 {
     return this->name;
@@ -51,4 +56,9 @@ std::string Item::getWriting()
 std::vector<std::string> Item::getTurnon()
 {
     return this->turnon;
+}
+
+std::vector<int> Item::getItemTrigger()
+{
+    return this->itemTrigger;
 }

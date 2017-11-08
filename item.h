@@ -12,7 +12,8 @@ class Item
         std::string description;
         std::string writing;
         std::vector<std::string> turnon;
-        // add trigger later
+        std::vector<int> itemTrigger;
+
     public:
         Item();
         virtual ~Item();
@@ -21,12 +22,14 @@ class Item
         void setDescription(std::string);
         void setWriting(std::string);
         void setTurnon(std::string);
-        
+        void setItemTrigger(int);
+
         std::string getName();
         std::string getStatus();
         std::string getDescription();
         std::string getWriting();
         std::vector<std::string> getTurnon();
+        std::vector<int> getItemTrigger();
 };
 
 #endif

@@ -15,6 +15,7 @@ vector<Item> allItems;
 vector<Creature> allCreatures;
 vector<Container> allContainers;
 vector<Border> allBorders;
+vector<Trigger> allTriggers;
 
 void interpretXmlString(std::string gameXml)
 {
@@ -60,7 +61,7 @@ void interpretXmlString(std::string gameXml)
                 turnon = turnon->first_node()->next_sibling();
             }
         }
-
+        //int TriggerPosition = makeTrigger();
         allItems.push_back(newItem);
         item = item->next_sibling("item");
     }
@@ -205,7 +206,7 @@ void interpretXmlString(std::string gameXml)
     }
 
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
-    printRoom(allRooms);
+    // printRoom(allRooms);
 }
 
 // Finds the container address using the name

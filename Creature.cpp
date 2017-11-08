@@ -27,6 +27,11 @@ void Creature::setAttackActions(string attackActions)
     this->attackActions.push_back(attackActions);
 }
 
+void Creature::setCreatureTriggers(int trigger)
+{
+    this->creatureTriggers.push_back(trigger);
+}
+
 string Creature::getName()
 {
     return this->name;
@@ -50,4 +55,9 @@ vector<string> Creature::getVulnerability()
 vector<string> Creature::getAttackAction()
 {
     return this->attackActions;
+}
+
+vector<int> Creature::getCreatureTriggers()
+{
+    return this->creatureTriggers;
 }
