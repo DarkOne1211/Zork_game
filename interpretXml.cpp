@@ -11,6 +11,9 @@ int findCreatureAddress(vector<Creature>, string);
 int findRoomAddress(vector<Room>, string);
 void printRoom(vector<Room>);
 void add(string);
+void deleteObject(string);
+void update(string);
+void gameOver();
 
 vector<Room> allRooms;
 vector<Item> allItems;
@@ -423,6 +426,7 @@ void interpretXmlString(std::string gameXml)
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
     //printRoom(allRooms);
     //add("Add giant to Main");
+    //update("Update giant to idgaf");
 }
 
 // Finds the container address using the name
@@ -559,6 +563,83 @@ void add(string addCommand)
         allContainers[addedLocation].setContainerItems(location);
     }
     
+}
+
+// Deletes Object
+void deleteObject(string deleteCommand)
+{
+
+}
+
+void update(string updateCommand)
+{
+    string updateCommandWords[4];
+    int location = -1;
+    string objectType;
+
+    // Splitting the commad into words
+    short counter = 0;
+    
+    for(short i=0;i<updateCommand.length();i++)
+    {
+        if(updateCommand[i] == ' ')
+        {
+            counter++;
+            i++;
+        }
+        updateCommandWords[counter] += updateCommand[i];
+    }
+
+    // Finding the object to change status
+
+    if(findCreatureAddress(allCreatures, updateCommandWords[1]) != -1)
+    {
+        location = findCreatureAddress(allCreatures, updateCommandWords[1]);
+        objectType = "Creature";
+    }
+    else if(findContainerAddress(allContainers, updateCommandWords[1]) != -1)
+    {
+        location = findContainerAddress(allContainers, updateCommandWords[1]);
+        objectType = "Container";
+    }
+    else if(findItemAddress(allItems, updateCommandWords[1]) != -1)
+    {
+        location = findItemAddress(allItems, updateCommandWords[1]);
+        objectType = "Item";
+    }
+    else
+    {
+        location = findRoomAddress(allRooms, updateCommandWords[1]);
+        objectType = "Room";
+    }
+
+    // Changing Status
+
+    if(objectType == "Creature")
+    {
+        allCreatures[location].setStatus(updateCommandWords[3]);
+    }
+
+    if(objectType == "Container")
+    {
+        allContainers[location].setStatus(updateCommandWords[3]);
+    }
+
+    if(objectType == "Item")
+    {
+        allItems[location].setStatus(updateCommandWords[3]);
+    }
+
+    if(objectType == "Room")
+    {
+        allRooms[location].setStatus(updateCommandWords[3]);
+    }
+
+}
+
+void gameOver()
+{
+    exit(EXIT_SUCCESS);
 }
 //------------------------------------------------------------------------------------------
 
