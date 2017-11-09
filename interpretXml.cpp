@@ -8,7 +8,9 @@ using namespace rapidxml;
 int findItemAddress(vector<Item>, string);
 int findContainerAddress(vector<Container>, string);
 int findCreatureAddress(vector<Creature>, string);
+int findRoomAddress(vector<Room>, string);
 void printRoom(vector<Room>);
+void add(string);
 
 vector<Room> allRooms;
 vector<Item> allItems;
@@ -419,7 +421,8 @@ void interpretXmlString(std::string gameXml)
     }
 
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
-    // printRoom(allRooms);
+    //printRoom(allRooms);
+    //add("Add giant to Main");
 }
 
 // Finds the container address using the name
@@ -433,7 +436,7 @@ int findItemAddress(vector<Item> ReadItems, string name)
             return counter;
         }
     }
-    return 0;
+    return -1;
 }
 
 // Finds the container address using the name
@@ -447,7 +450,7 @@ int findContainerAddress(vector<Container> ReadItems, string name)
             return counter;
         }
     }
-    return 0;
+    return -1;
 }
 
 // Finds the creature address using the name
@@ -461,9 +464,103 @@ int findCreatureAddress(vector<Creature> ReadItems, string name)
             return counter;
         }
     }
-    return 0;
+    return -1;
 }
 
+int findRoomAddress(vector<Room> ReadItems, string name)
+{
+    int size = ReadItems.size();
+    for(int counter = 0; counter < size; counter++)
+    {
+        if(ReadItems[counter].getName() == name)
+        {
+            return counter;
+        }
+    }
+    return -1;   
+}
+
+//--------------------------------BEHIND THE SCENES COMMANDS--------------------------------
+
+// Adds object to (Room/Container)
+void add(string addCommand)
+{
+    string addCommandWords[4];
+    int location = -1;
+    int addedLocation = -1;
+    string objectType;
+    string objectToAddTo;
+
+    // Splitting the commad into words
+    short counter = 0;
+    
+    for(short i=0;i<addCommand.length();i++)
+    {
+        if(addCommand[i] == ' ')
+        {
+            counter++;
+            i++;
+        }
+        addCommandWords[counter] += addCommand[i];
+    }
+
+    // Finding the kind of object being added
+    
+    if(findCreatureAddress(allCreatures, addCommandWords[1]) != -1)
+    {
+        location = findCreatureAddress(allCreatures, addCommandWords[1]);
+        objectType = "Creature";
+    }
+    else if(findContainerAddress(allContainers, addCommandWords[1]) != -1)
+    {
+        location = findContainerAddress(allContainers, addCommandWords[1]);
+        objectType = "Container";
+    }
+    else
+    {
+        location = findItemAddress(allItems, addCommandWords[1]);
+        objectType = "Item";
+    }
+
+    // Finding the object to be added to
+    if(findContainerAddress(allContainers, addCommandWords[1]) != -1)
+    {
+        addedLocation = findContainerAddress(allContainers, addCommandWords[1]);
+        objectToAddTo = "Container";
+    }
+    else
+    {
+        addedLocation = findRoomAddress(allRooms, addCommandWords[3]);
+        objectToAddTo = "Room";
+    }
+
+    // Adding the object
+    
+    if(objectToAddTo == "Room")
+    {
+        if(objectType == "Creature")
+        {
+            allRooms[addedLocation].setRoomCreatures(location);
+        }
+        
+        if(objectType == "Container")
+        {
+            allRooms[addedLocation].setRoomContainers(location);
+        }
+        
+        if(objectType == "Item")
+        {
+            allRooms[addedLocation].setRoomItems(location);
+        }
+    }
+
+    if(objectToAddTo == "Container")
+    {
+        allContainers[addedLocation].setContainerItems(location);
+    }
+    
+}
+//------------------------------------------------------------------------------------------
 
 //-----------------------------------TEST FUNCTIONS-----------------------------------------
 
@@ -535,6 +632,8 @@ void printRoom(vector<Room> Rooms)
         }
 
         printContainer(Rooms[i].getRoomContainers());
+        printCreatures(Rooms[i].getRoomCreatures());
+        printItems(Rooms[i].getRoomItems());
     } 
 }
 //------------------------------------------------------------------------------------------
