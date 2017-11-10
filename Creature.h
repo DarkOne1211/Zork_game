@@ -15,7 +15,7 @@ class Creature
         vector<string> vulnerability;
         vector<string> attackActions;
         vector<int> creatureTriggers;
-        // Add trigger later
+        int deleted = 0;
 
     public:
         Creature();
@@ -26,6 +26,7 @@ class Creature
         void setVulnerability(string);
         void setAttackActions(string);
         void setCreatureTriggers(int);
+        void setdeleted();
 
         string getName();
         string getStatus();
@@ -33,6 +34,7 @@ class Creature
         vector<string> getVulnerability();
         vector<string> getAttackAction();
         vector<int> getCreatureTriggers();
+        int getdeleted();
 };
 
 #endif

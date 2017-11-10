@@ -13,6 +13,7 @@ class Item
         std::string writing;
         std::vector<std::string> turnon;
         std::vector<int> itemTrigger;
+        int deleted = 0;
 
     public:
         Item();
@@ -23,6 +24,7 @@ class Item
         void setWriting(std::string);
         void setTurnon(std::string);
         void setItemTrigger(int);
+        void setdeleted();
 
         std::string getName();
         std::string getStatus();
@@ -30,6 +32,7 @@ class Item
         std::string getWriting();
         std::vector<std::string> getTurnon();
         std::vector<int> getItemTrigger();
+        int getdeleted();
 };
 
 #endif

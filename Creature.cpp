@@ -32,6 +32,11 @@ void Creature::setCreatureTriggers(int trigger)
     this->creatureTriggers.push_back(trigger);
 }
 
+void Creature::setdeleted()
+{
+    this->deleted = 1;
+}
+
 string Creature::getName()
 {
     return this->name;
@@ -60,4 +65,9 @@ vector<string> Creature::getAttackAction()
 vector<int> Creature::getCreatureTriggers()
 {
     return this->creatureTriggers;
+}
+
+int Creature::getdeleted()
+{
+    return this->deleted;
 }

@@ -14,7 +14,8 @@ class Container
         string description;
         vector<string> accept;
         vector<int> ContainerItems;
-        // add trigger later
+        int deleted = 0;
+
     public:
         Container();
         virtual ~Container();
@@ -23,12 +24,14 @@ class Container
         void setDescription(string);
         void setAccept(string);
         void setContainerItems(int);
-        
+        void setdeleted();
+
         string getName();
         string getStatus();
         string getDescription();
         vector<string> getAccept();
         vector<int> getContainerItems();
+        int getdeleted();
 };
 
 #endif

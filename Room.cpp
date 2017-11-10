@@ -46,6 +46,12 @@ void Room::setRoomTriggers(int Triggers)
     this->RoomTriggers.push_back(Triggers);
 }
 
+void Room::setdeleted()
+{
+    this->deleted = 1;
+}
+
+
 string Room::getName()
 {
     return this->name;
@@ -89,4 +95,9 @@ vector<int> Room::getRoomCreatures()
 vector<int> Room::getRoomTriggers()
 {
     return this->RoomTriggers;
+}
+
+int Room::getdeleted()
+{
+    return this->deleted;
 }

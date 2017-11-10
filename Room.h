@@ -21,7 +21,7 @@ class Room
         vector<int> RoomItems;
         vector<int> RoomCreatures;
         vector<int> RoomTriggers;
-        //add triggers later
+        int deleted = 0;
         
     public:
         Room();
@@ -35,6 +35,7 @@ class Room
         void setRoomItems(int);
         void setRoomCreatures(int);
         void setRoomTriggers(int);
+        void setdeleted();
 
         string getName();
         string getStatus();
@@ -45,6 +46,7 @@ class Room
         vector<int> getRoomItems();
         vector<int> getRoomCreatures();
         vector<int> getRoomTriggers();
+        int getdeleted();
 };
 
 #endif

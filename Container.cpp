@@ -22,6 +22,10 @@ void Container::setContainerItems(int ContainerItems)
 {
     this->ContainerItems.push_back(ContainerItems);
 }
+void Container::setdeleted()
+{
+    this->deleted = 1;
+}
 
 string Container::getName()
 {
@@ -42,4 +46,8 @@ vector<string> Container::getAccept()
 vector<int> Container::getContainerItems()
 {
     return this->ContainerItems;
+}
+int Container::getdeleted()
+{
+    return this->deleted;
 }

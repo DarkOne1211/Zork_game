@@ -33,6 +33,11 @@ void Item::setItemTrigger(int trigger)
     this->itemTrigger.push_back(trigger);
 }
 
+void Item::setdeleted()
+{
+    this->deleted = 1;
+}
+
 std::string Item::getName()
 {
     return this->name;
@@ -61,4 +66,9 @@ std::vector<std::string> Item::getTurnon()
 std::vector<int> Item::getItemTrigger()
 {
     return this->itemTrigger;
+}
+
+int Item::getdeleted()
+{
+    return this->deleted;
 }

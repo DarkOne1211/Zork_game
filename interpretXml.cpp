@@ -568,7 +568,7 @@ void add(string addCommand)
 // Deletes Object
 void deleteObject(string deleteCommand)
 {
-
+    
 }
 
 void update(string updateCommand)
