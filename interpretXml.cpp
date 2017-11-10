@@ -425,6 +425,7 @@ void interpretXmlString(std::string gameXml)
 
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
     //printRoom(allRooms);
+    //deleteObject("Delete giant");
     //add("Add giant to Main");
     //update("Update giant to idgaf");
 }
@@ -544,22 +545,26 @@ void add(string addCommand)
     {
         if(objectType == "Creature")
         {
+            allCreatures[location].setdeleted(0);
             allRooms[addedLocation].setRoomCreatures(location);
         }
         
         if(objectType == "Container")
         {
+            allContainers[location].setdeleted(0);
             allRooms[addedLocation].setRoomContainers(location);
         }
         
         if(objectType == "Item")
         {
+            allItems[location].setdeleted(0);
             allRooms[addedLocation].setRoomItems(location);
         }
     }
 
     if(objectToAddTo == "Container")
     {
+        allContainers[location].setdeleted(0);
         allContainers[addedLocation].setContainerItems(location);
     }
     
@@ -568,7 +573,67 @@ void add(string addCommand)
 // Deletes Object
 void deleteObject(string deleteCommand)
 {
+    string deleteCommandWords[4];
+    int location = -1;
+    string objectType;
+
+    // Splitting the commad into words
+    short counter = 0;
     
+    for(short i=0;i<deleteCommand.length();i++)
+    {
+        if(deleteCommand[i] == ' ')
+        {
+            counter++;
+            i++;
+        }
+        deleteCommandWords[counter] += deleteCommand[i];
+    }
+    
+    // Finding the object to change delete
+
+    if(findCreatureAddress(allCreatures, deleteCommandWords[1]) != -1)
+    {
+        location = findCreatureAddress(allCreatures, deleteCommandWords[1]);
+        objectType = "Creature";
+    }
+    else if(findContainerAddress(allContainers, deleteCommandWords[1]) != -1)
+    {
+        location = findContainerAddress(allContainers, deleteCommandWords[1]);
+        objectType = "Container";
+    }
+    else if(findItemAddress(allItems, deleteCommandWords[1]) != -1)
+    {
+        location = findItemAddress(allItems, deleteCommandWords[1]);
+        objectType = "Item";
+    }
+    else
+    {
+        location = findRoomAddress(allRooms, deleteCommandWords[1]);
+        objectType = "Room";
+    }
+
+    // deleting
+    if(objectType == "Creature")
+    {
+        allCreatures[location].setdeleted(1);
+    }
+
+    if(objectType == "Container")
+    {
+        allContainers[location].setdeleted(1);
+    }
+
+    if(objectType == "Item")
+    {
+        allItems[location].setdeleted(1);
+    }
+
+    if(objectType == "Room")
+    {
+        allRooms[location].setdeleted(1);
+    }
+
 }
 
 void update(string updateCommand)
