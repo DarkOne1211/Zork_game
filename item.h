@@ -24,7 +24,7 @@ class Item
         void setWriting(std::string);
         void setTurnon(std::string);
         void setItemTrigger(int);
-        void setdeleted();
+        void setdeleted(int);
 
         std::string getName();
         std::string getStatus();

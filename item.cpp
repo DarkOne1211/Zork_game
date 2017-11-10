@@ -33,9 +33,9 @@ void Item::setItemTrigger(int trigger)
     this->itemTrigger.push_back(trigger);
 }
 
-void Item::setdeleted()
+void Item::setdeleted(int number)
 {
-    this->deleted = 1;
+    this->deleted = number;
 }
 
 std::string Item::getName()

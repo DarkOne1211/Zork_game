@@ -35,7 +35,7 @@ class Room
         void setRoomItems(int);
         void setRoomCreatures(int);
         void setRoomTriggers(int);
-        void setdeleted();
+        void setdeleted(int);
 
         string getName();
         string getStatus();

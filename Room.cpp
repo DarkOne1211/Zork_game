@@ -46,9 +46,9 @@ void Room::setRoomTriggers(int Triggers)
     this->RoomTriggers.push_back(Triggers);
 }
 
-void Room::setdeleted()
+void Room::setdeleted(int number)
 {
-    this->deleted = 1;
+    this->deleted = number;
 }
 
 

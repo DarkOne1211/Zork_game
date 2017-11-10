@@ -24,7 +24,7 @@ class Container
         void setDescription(string);
         void setAccept(string);
         void setContainerItems(int);
-        void setdeleted();
+        void setdeleted(int);
 
         string getName();
         string getStatus();

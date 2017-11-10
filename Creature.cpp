@@ -32,9 +32,9 @@ void Creature::setCreatureTriggers(int trigger)
     this->creatureTriggers.push_back(trigger);
 }
 
-void Creature::setdeleted()
+void Creature::setdeleted(int number)
 {
-    this->deleted = 1;
+    this->deleted = number;
 }
 
 string Creature::getName()

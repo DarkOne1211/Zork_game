@@ -22,9 +22,9 @@ void Container::setContainerItems(int ContainerItems)
 {
     this->ContainerItems.push_back(ContainerItems);
 }
-void Container::setdeleted()
+void Container::setdeleted(int number)
 {
-    this->deleted = 1;
+    this->deleted = number;
 }
 
 string Container::getName()

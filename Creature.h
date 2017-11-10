@@ -26,7 +26,7 @@ class Creature
         void setVulnerability(string);
         void setAttackActions(string);
         void setCreatureTriggers(int);
-        void setdeleted();
+        void setdeleted(int);
 
         string getName();
         string getStatus();
