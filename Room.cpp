@@ -51,7 +51,6 @@ void Room::setdeleted(int number)
     this->deleted = number;
 }
 
-
 string Room::getName()
 {
     return this->name;

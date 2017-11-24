@@ -14,6 +14,7 @@ void add(string);
 void deleteObject(string);
 void update(string);
 void gameOver();
+void gameInitiate();
 
 vector<Room> allRooms;
 vector<Item> allItems;
@@ -83,7 +84,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* commands = trigger->first_node("command");
                    while(commands != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("command")->value());
+                        newTrigger.setCommands(commands->value());
                         commands = commands->next_sibling("command");
                    }
                }
@@ -93,7 +94,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* prints = trigger->first_node("print");
                    while(prints != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("print")->value());
+                        newTrigger.setPrints(prints->value());
                         prints = prints->next_sibling("print");
                    }
                }
@@ -103,7 +104,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* actions = trigger->first_node("action");
                    while(actions != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("action")->value());
+                        newTrigger.setActions(actions->value());
                         actions = actions->next_sibling("action");
                    }
                }
@@ -115,20 +116,36 @@ void interpretXmlString(std::string gameXml)
                    {
                         newTrigger.setConditions(conditions->first_node("has")->value());
                    }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
 
                    if(conditions->first_node("status") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("status")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
                    }
 
                    if(conditions->first_node("object") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("object")->value());
                    }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
 
                    if(conditions->first_node("owner") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("owner")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
                    }
                }
 
@@ -175,6 +192,94 @@ void interpretXmlString(std::string gameXml)
             }
         }
 
+        if(container->first_node("trigger") != NULL)
+        {
+           xml_node<>* trigger = container->first_node("trigger");
+           while(trigger != NULL)
+           {
+               Trigger newTrigger;
+               if(trigger->first_node("type") != NULL)
+               {
+                   newTrigger.setType(trigger->first_node("type")->value());
+               }
+
+               if(trigger->first_node("command") != NULL)
+               {
+                   xml_node<>* commands = trigger->first_node("command");
+                   while(commands != NULL)
+                   {
+                        newTrigger.setCommands(commands->value());
+                        commands = commands->next_sibling("command");
+                   }
+               }
+
+               if(trigger->first_node("print") != NULL)
+               {
+                   xml_node<>* prints = trigger->first_node("print");
+                   while(prints != NULL)
+                   {
+                        newTrigger.setPrints(prints->value());
+                        prints = prints->next_sibling("print");
+                   }
+               }
+
+               if(trigger->first_node("action") != NULL)
+               {
+                   xml_node<>* actions = trigger->first_node("action");
+                   while(actions != NULL)
+                   {
+                        newTrigger.setActions(actions->value());
+                        actions = actions->next_sibling("action");
+                   }
+               }
+
+               if(trigger->first_node("condition") != NULL)
+               {
+                   xml_node<>* conditions = trigger->first_node("condition");
+                   if(conditions->first_node("has") != NULL)
+                   {
+                        newTrigger.setConditions(conditions->first_node("has")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
+
+                   if(conditions->first_node("status") != NULL)
+                   {
+                        newTrigger.setConditions(conditions->first_node("status")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
+
+                   if(conditions->first_node("object") != NULL)
+                   {
+                        newTrigger.setConditions(conditions->first_node("object")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
+
+                   if(conditions->first_node("owner") != NULL)
+                   {
+                        newTrigger.setConditions(conditions->first_node("owner")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
+               }
+
+               allTriggers.push_back(newTrigger);
+               newContainer.setContainerTrigger(allTriggers.size() - 1);
+               trigger = trigger->next_sibling("trigger");
+           }
+           
+        }
+        
         allContainers.push_back(newContainer);
         container = container->next_sibling("container");
     }
@@ -227,7 +332,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* commands = trigger->first_node("command");
                    while(commands != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("command")->value());
+                        newTrigger.setCommands(commands->value());
                         commands = commands->next_sibling("command");
                    }
                }
@@ -237,7 +342,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* prints = trigger->first_node("print");
                    while(prints != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("print")->value());
+                        newTrigger.setPrints(prints->value());
                         prints = prints->next_sibling("print");
                    }
                }
@@ -247,7 +352,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* actions = trigger->first_node("action");
                    while(actions != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("action")->value());
+                        newTrigger.setActions(actions->value());
                         actions = actions->next_sibling("action");
                    }
                }
@@ -259,20 +364,36 @@ void interpretXmlString(std::string gameXml)
                    {
                         newTrigger.setConditions(conditions->first_node("has")->value());
                    }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
 
                    if(conditions->first_node("status") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("status")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
                    }
 
                    if(conditions->first_node("object") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("object")->value());
                    }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
 
                    if(conditions->first_node("owner") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("owner")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
                    }
                }
 
@@ -364,7 +485,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* commands = trigger->first_node("command");
                    while(commands != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("command")->value());
+                        newTrigger.setCommands(commands->value());
                         commands = commands->next_sibling("command");
                    }
                }
@@ -374,7 +495,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* prints = trigger->first_node("print");
                    while(prints != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("print")->value());
+                        newTrigger.setPrints(prints->value());
                         prints = prints->next_sibling("print");
                    }
                }
@@ -384,7 +505,7 @@ void interpretXmlString(std::string gameXml)
                    xml_node<>* actions = trigger->first_node("action");
                    while(actions != NULL)
                    {
-                        newTrigger.setCommands(trigger->first_node("action")->value());
+                        newTrigger.setActions(actions->value());
                         actions = actions->next_sibling("action");
                    }
                }
@@ -396,20 +517,36 @@ void interpretXmlString(std::string gameXml)
                    {
                         newTrigger.setConditions(conditions->first_node("has")->value());
                    }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
 
                    if(conditions->first_node("status") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("status")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
                    }
 
                    if(conditions->first_node("object") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("object")->value());
                    }
+                   else
+                   {
+                        newTrigger.setConditions("0");
+                   }
 
                    if(conditions->first_node("owner") != NULL)
                    {
                         newTrigger.setConditions(conditions->first_node("owner")->value());
+                   }
+                   else
+                   {
+                        newTrigger.setConditions("0");
                    }
                }
 
@@ -423,6 +560,8 @@ void interpretXmlString(std::string gameXml)
         room = room->next_sibling("room");
     }
 
+    // Starting to take user input 
+    gameInitiate();
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
     //printRoom(allRooms);
     //deleteObject("Delete giant");
@@ -783,3 +922,28 @@ void printRoom(vector<Room> Rooms)
     } 
 }
 //------------------------------------------------------------------------------------------
+void gameInitiate()
+{
+    string inputCommand;
+    string inputCommandWords[4] = {"","","",""};
+    short counter = 0 ;
+    cout << "Start Game\n";
+    for(;;)
+    {
+        cin >> inputCommand;
+        for(short i = 0; i < inputCommand.length(); i++)
+        {
+            if(inputCommand[i] == ' ')
+            {
+                counter++;
+                i++;
+            }
+            inputCommandWords[counter] += inputCommand[i];
+        }
+
+        for(short i = 0; i < 4; i++)
+        {
+            cout << inputCommandWords[i] << "\n";
+        }
+    }
+}

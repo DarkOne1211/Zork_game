@@ -14,6 +14,7 @@ class Container
         string description;
         vector<string> accept;
         vector<int> ContainerItems;
+        vector<int> ContainerTriggers;
         int deleted = 0;
 
     public:
@@ -24,6 +25,7 @@ class Container
         void setDescription(string);
         void setAccept(string);
         void setContainerItems(int);
+        void setContainerTrigger(int);
         void setdeleted(int);
 
         string getName();
@@ -31,6 +33,7 @@ class Container
         string getDescription();
         vector<string> getAccept();
         vector<int> getContainerItems();
+        vector<int> getContainerTriggers();
         int getdeleted();
 };
 

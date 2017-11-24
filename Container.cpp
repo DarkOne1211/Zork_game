@@ -22,6 +22,10 @@ void Container::setContainerItems(int ContainerItems)
 {
     this->ContainerItems.push_back(ContainerItems);
 }
+void Container::setContainerTrigger(int trigger)
+{
+    this->ContainerTriggers.push_back(trigger);
+}
 void Container::setdeleted(int number)
 {
     this->deleted = number;
@@ -46,6 +50,10 @@ vector<string> Container::getAccept()
 vector<int> Container::getContainerItems()
 {
     return this->ContainerItems;
+}
+vector<int> Container::getContainerTriggers()
+{
+    return this->ContainerTriggers;
 }
 int Container::getdeleted()
 {
