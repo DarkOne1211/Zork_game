@@ -14,7 +14,16 @@ void add(string);
 void deleteObject(string);
 void update(string);
 void gameOver();
-void gameInitiate();
+void gameInit();
+void changeRoom(string);
+void listInventory();
+void takeItem(string);
+void openContainer(string);
+void readItem(string);
+void dropItem(string);
+void putItem(string, string);
+void turnonItem(string);
+void attackCreature(string, string);
 
 vector<Room> allRooms;
 vector<Item> allItems;
@@ -561,7 +570,9 @@ void interpretXmlString(std::string gameXml)
     }
 
     // Starting to take user input 
-    gameInitiate();
+
+    gameInit();
+    
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
     //printRoom(allRooms);
     //deleteObject("Delete giant");
@@ -922,7 +933,7 @@ void printRoom(vector<Room> Rooms)
     } 
 }
 //------------------------------------------------------------------------------------------
-void gameInitiate()
+void gameInit()
 {
     string inputCommand;
     string inputCommandWords[4] = {"","","",""};
@@ -930,7 +941,13 @@ void gameInitiate()
     cout << "Start Game\n";
     for(;;)
     {
-        cin >> inputCommand;
+        inputCommandWords[0] = "";
+        inputCommandWords[1] = "";
+        inputCommandWords[2] = "";
+        inputCommandWords[3] = "";
+        counter = 0;
+        getline(cin, inputCommand);
+        
         for(short i = 0; i < inputCommand.length(); i++)
         {
             if(inputCommand[i] == ' ')
@@ -943,7 +960,132 @@ void gameInitiate()
 
         for(short i = 0; i < 4; i++)
         {
-            cout << inputCommandWords[i] << "\n";
+            cout << i << ":" << inputCommandWords[i] << " " ;
         }
+        cout << "\n";
+
+        // Change Rooms
+
+        if(inputCommandWords[0] == "n" || inputCommandWords[0] == "s" || inputCommandWords[0] == "e" || inputCommandWords[0] == "w")
+        {
+            changeRoom(inputCommandWords[0]);
+        }
+
+        // Display Inventory
+
+        else if(inputCommandWords[0] == "i")
+        {
+            listInventory();
+        }
+
+        // Take Item
+
+        else if(inputCommandWords[0] == "take")
+        {
+            takeItem(inputCommandWords[1]);
+        }
+
+        // Open Exit
+        
+        else if(inputCommandWords[0] == "open" && inputCommandWords[1] == "exit")
+        {
+            gameOver();
+        }
+        
+        // Open Container
+        
+        else if(inputCommandWords[0] == "open")
+        {
+            openContainer(inputCommandWords[1]);
+        }
+
+        // Read Item
+        else if(inputCommandWords[0] == "read")
+        {
+            readItem(inputCommandWords[1]);
+        }
+
+        // Read Item
+        else if(inputCommandWords[0] == "read")
+        {
+            readItem(inputCommandWords[1]);
+        }
+
+        // Drop Item
+        else if(inputCommandWords[0] == "drop")
+        {
+            dropItem(inputCommandWords[1]);
+        }
+
+        // put Item
+        else if(inputCommandWords[0] == "put")
+        {
+            putItem(inputCommandWords[1], inputCommandWords[3]);
+        }
+        
+        // Turn on Item
+        else if(inputCommandWords[0] == "turn")
+        {
+            turnonItem(inputCommandWords[2]);
+        }
+        
+        // attack creature
+        else if(inputCommandWords[0] == "attack")
+        {
+            attackCreature(inputCommandWords[1],inputCommandWords[3]);
+        }
+
+        else
+        {
+            cout << "Invalid Command";
+        }
+
     }
+}
+
+//-----------------------------------GAME COMMANDS-------------------------------
+
+void changeRoom(string direction)
+{
+    cout << "Changed Rooms\n";
+}
+
+void listInventory()
+{
+    cout << "List Inventory\n";
+}
+
+void takeItem(string itemName)
+{
+    cout << "Item" << itemName << "added to inventory\n";
+}
+
+void openContainer(string containerName)
+{
+    cout << "Open" << containerName <<"\n";
+}
+
+void readItem(string itemName)
+{
+    cout << "Read item" << "\n";
+}
+
+void dropItem(string itemName)
+{
+    cout << "Drop item" << "\n";
+}
+
+void putItem(string itemName, string containerName)
+{
+    cout << "put item" << "\n";
+}
+
+void turnonItem(string itemName)
+{
+    cout << "turn on item" <<"\n";
+}
+
+void attackCreature(string creatureName, string itemName)
+{
+    cout << "Attack Creature" << "\n";
 }
