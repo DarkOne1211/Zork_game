@@ -1037,7 +1037,7 @@ void gameInit()
 
         else
         {
-            cout << "Invalid Command";
+            cout << "Invalid Command\n";
         }
 
     }
