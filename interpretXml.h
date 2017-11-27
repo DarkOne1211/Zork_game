@@ -7,5 +7,6 @@
 #include <string>
 #include "./rapidxml/rapidxml.hpp"
 #include "./rapidxml/rapidxml_print.hpp"
+#include "Person.h"
 
 #endif

@@ -24,6 +24,7 @@ void dropItem(string);
 void putItem(string, string);
 void turnonItem(string);
 void attackCreature(string, string);
+void findAction(string);
 
 vector<Room> allRooms;
 vector<Item> allItems;
@@ -31,6 +32,9 @@ vector<Creature> allCreatures;
 vector<Container> allContainers;
 vector<Border> allBorders;
 vector<Trigger> allTriggers;
+
+// initializing the player    
+Person player;
 
 void interpretXmlString(std::string gameXml)
 {
@@ -42,7 +46,10 @@ void interpretXmlString(std::string gameXml)
     xml_copy.push_back('\0');
     xml_document<> doc;
     doc.parse<0>(&xml_copy[0]);
-    
+
+    // Initialize player Room
+    player.currentRoom = 0;
+
     // Declaring variables for all major objects
     xml_node<>* map = doc.first_node("map");
     xml_node<>* room = map->first_node("room");
@@ -320,8 +327,13 @@ void interpretXmlString(std::string gameXml)
             xml_node<>* attack = creature->first_node("attack");
             while(attack != NULL)
             {
-                newCreature.setAttackActions(attack->first_node()->value());
-                attack = attack->first_node()->next_sibling();
+                xml_node<>* actionStuff = attack->first_node();
+                while(actionStuff != NULL)
+                {
+                    newCreature.setAttackActions(actionStuff->value());
+                    actionStuff = actionStuff->next_sibling();
+                }
+                attack = attack->next_sibling("attack");
             }
         }
 
@@ -856,6 +868,7 @@ void gameOver()
 {
     exit(EXIT_SUCCESS);
 }
+
 //------------------------------------------------------------------------------------------
 
 //-----------------------------------TEST FUNCTIONS-----------------------------------------
@@ -935,10 +948,10 @@ void printRoom(vector<Room> Rooms)
 //------------------------------------------------------------------------------------------
 void gameInit()
 {
+    cout << allRooms[player.currentRoom].getDescription() << "\n";
     string inputCommand;
     string inputCommandWords[4] = {"","","",""};
     short counter = 0 ;
-    cout << "Start Game\n";
     for(;;)
     {
         inputCommandWords[0] = "";
@@ -958,12 +971,13 @@ void gameInit()
             inputCommandWords[counter] += inputCommand[i];
         }
 
+        /*
         for(short i = 0; i < 4; i++)
         {
             cout << i << ":" << inputCommandWords[i] << " " ;
         }
         cout << "\n";
-
+        */
         // Change Rooms
 
         if(inputCommandWords[0] == "n" || inputCommandWords[0] == "s" || inputCommandWords[0] == "e" || inputCommandWords[0] == "w")
@@ -997,12 +1011,6 @@ void gameInit()
         else if(inputCommandWords[0] == "open")
         {
             openContainer(inputCommandWords[1]);
-        }
-
-        // Read Item
-        else if(inputCommandWords[0] == "read")
-        {
-            readItem(inputCommandWords[1]);
         }
 
         // Read Item
@@ -1047,45 +1055,416 @@ void gameInit()
 
 void changeRoom(string direction)
 {
-    cout << "Changed Rooms\n";
+    int move;
+    string nextRoom = "";
+
+    if(direction == "n")
+    {
+        move = 0;
+    }
+    else if(direction == "s")
+    {
+        move = 1;
+    }
+    else if(direction == "e")
+    {
+        move = 2;
+    }
+    else if(direction == "w")
+    {
+        move = 3;
+    }
+    else
+    {
+        cout << "Invalid command\n";
+    }
+
+    vector<int> borderLocation = allRooms[player.currentRoom].getBorders();
+    int borderVectorSize = borderLocation.size();
+    for(int k = 0; k < borderVectorSize; k ++)
+    {
+        if(allBorders[borderLocation[k]].getBorder()[0] == direction[0])
+        {
+            nextRoom = allBorders[borderLocation[k]].getName();
+            player.currentRoom = findRoomAddress(allRooms, nextRoom);
+            cout << allRooms[player.currentRoom].getDescription() << "\n";
+        }        
+    }
+    if(allRooms[player.currentRoom].getName() != nextRoom)
+    {
+        cout << "Cannot go in that direction\n";
+    }
 }
 
 void listInventory()
 {
-    cout << "List Inventory\n";
+    if(player.inventory.empty())
+    {
+        cout << "Inventory: Empty\n";
+    }
+    else
+    {
+        cout << "Inventory: ";
+        for(int i = 0; i < player.inventory.size(); i++)
+        {
+            cout << allItems[player.inventory[i]].getName() << ", ";
+        }
+        cout << "\b\b" << " \n";
+    }
 }
 
 void takeItem(string itemName)
 {
-    cout << "Item" << itemName << "added to inventory\n";
+    int itemLocation  = -1;
+    itemLocation = findItemAddress(allItems, itemName);
+    
+    if(itemLocation == -1)
+    {
+        cout << itemName << " does not exist\n";
+    }
+
+    cout << "Item " << itemName << " added to inventory\n";
+
+    // Removing item from Room
+    for(int i = 0; i < allRooms.size(); i++)
+    {
+        for(int j = 0; j < allRooms[i].getRoomItems().size(); j++)
+        {
+            if(allRooms[i].getRoomItems()[j] == itemLocation)
+            {
+                vector<int> roomLocation = allRooms[i].getRoomItems();
+                roomLocation.erase(roomLocation.begin() + j);
+            }
+        }
+    }   
+
+    // Removing item from Container
+    for(int i = 0; i < allContainers.size(); i++)
+    {
+        for(int j = 0; j < allContainers[i].getContainerItems().size(); j++)
+        {
+            if(allContainers[i].getContainerItems()[j] == itemLocation)
+            {
+                vector<int> containerLocation = allContainers[i].getContainerItems();
+                containerLocation.erase(containerLocation.begin() + j);
+            }
+        }
+    }
+
+    player.inventory.push_back(itemLocation);
+
 }
 
 void openContainer(string containerName)
 {
-    cout << "Open" << containerName <<"\n";
+    int containerLocation = -1;
+    containerLocation = findContainerAddress(allContainers, containerName);
+    
+    if(containerLocation == -1)
+    {
+        cout<< "Container does not exist\n";
+        return;
+    }
+
+    cout << containerName << " contains ";
+    
+    for(int i = 0; i < allContainers[containerLocation].getContainerItems().size(); i++)
+    {
+        cout << allItems[allContainers[containerLocation].getContainerItems()[i]].getName() << ", ";
+    }
+    cout << "\b\b" << " \n";
 }
 
 void readItem(string itemName)
 {
-    cout << "Read item" << "\n";
+    int inventoryLocation = -1;
+    for(int i = 0; i < player.inventory.size(); i++)
+    {
+        if(allItems[player.inventory[i]].getName() == itemName)
+        {
+            inventoryLocation = i;
+        }
+    }
+
+    if(inventoryLocation == -1)
+    {
+        cout << "Item not in inventory\n";
+    }
+    else
+    {
+        if(allItems[player.inventory[inventoryLocation]].getWriting() == "")
+        {
+            cout << "Nothing Writter\n";
+        }
+        else
+        {
+            cout << allItems[player.inventory[inventoryLocation]].getWriting() << "\n";
+        }
+    }
 }
 
 void dropItem(string itemName)
 {
-    cout << "Drop item" << "\n";
+    int itemLocationinInv = -1;
+
+    for(int i = 0; i < player.inventory.size(); i++)
+    {
+        if(allItems[player.inventory[i]].getName() == itemName)
+        {
+            itemLocationinInv = i;
+        }
+    }
+
+    if(itemLocationinInv == -1)
+    {
+        cout << "Item not in inventory\n";
+    }
+    else
+    {
+        allRooms[player.currentRoom].setRoomItems(player.inventory[itemLocationinInv]);
+        (player.inventory).erase(player.inventory.begin()+itemLocationinInv);
+        cout<< itemName << " dropped\n";
+    }
 }
 
 void putItem(string itemName, string containerName)
 {
-    cout << "put item" << "\n";
+    
+    int itemLocationinInv = -1;
+
+    for(int i = 0; i < player.inventory.size(); i++)
+    {
+        if(allItems[player.inventory[i]].getName() == itemName)
+        {
+            itemLocationinInv = i;
+        }
+    }
+
+    if(itemLocationinInv == -1)
+    {
+        cout << "Item not in inventory\n";
+    }
+    else
+    {
+        int containerLocation = -1;
+        containerLocation = findContainerAddress(allContainers, containerName);
+        if(containerLocation == -1)
+        {
+            cout << "Container does not exist";
+        }
+        else
+        {
+            allContainers[containerLocation].setContainerItems(player.inventory[itemLocationinInv]);
+            (player.inventory).erase(player.inventory.begin()+itemLocationinInv);
+            cout<< itemName << " added to " << containerName<< "\n";
+        }
+    }
 }
 
 void turnonItem(string itemName)
 {
-    cout << "turn on item" <<"\n";
+    int itemLocationinInv = -1;
+
+    for(int i = 0; i < player.inventory.size(); i++)
+    {
+        if(allItems[player.inventory[i]].getName() == itemName)
+        {
+            itemLocationinInv = i;
+        }
+    }
+
+    if(itemLocationinInv == -1)
+    {
+        cout << "Item not in inventory\n";
+    }
+    else
+    {
+        vector<string> turnon = allItems[player.inventory[itemLocationinInv]].getTurnon();
+        if(turnon.empty())
+        {
+            cout << "This item cannot be turned on\n";
+        }
+        else
+        {
+            for(int i = 0; i < turnon.size(); i++)
+            {
+                findAction(turnon[i]);
+            }
+        }
+    }
 }
 
 void attackCreature(string creatureName, string itemName)
 {
-    cout << "Attack Creature" << "\n";
+    int itemLocationinInv = -1;
+
+    for(int i = 0; i < player.inventory.size(); i++)
+    {
+        if(allItems[player.inventory[i]].getName() == itemName)
+        {
+            itemLocationinInv = i;
+        }
+    }
+
+    if(itemLocationinInv == -1)
+    {
+        cout << "Item not in inventory\n";
+    }
+    else
+    {
+        int creatureLocation = -1;
+        for(int i = 0; i < allCreatures.size(); i++)
+        {
+            if(allCreatures[i].getName() == creatureName)
+            {
+                creatureLocation = i;
+            }
+        }
+
+        if(creatureLocation == -1)
+        {
+            cout << "Creature does not exist\n";
+        }
+        else
+        {
+            int attackDone = -1;
+            vector<string> vulnerability = allCreatures[creatureLocation].getVulnerability();
+            for(int i = 0; i < vulnerability.size(); i++)
+            {
+                if(vulnerability[i] == itemName)
+                {
+                    attackDone = 1;
+                    vector<string> attack = allCreatures[creatureLocation].getAttackAction();
+                    for(int j = 0; j < attack.size(); j++)
+                    {
+                        findAction(attack[j]);
+                    }
+                }
+            }
+
+            if(attackDone == -1)
+            {
+                cout << creatureName << " is invulnerable to " << itemName << "\n";
+            }
+        }
+    }   
+}
+
+void findAction(string inputCommand)
+{
+    string inputCommandWords[100];
+
+    short counter = 0 ;
+
+    for(int j = 0;j < 100; j++)
+    {
+        inputCommandWords[j] = "";
+    }
+
+    for(short i = 0; i < inputCommand.length(); i++)
+        {
+            if(inputCommand[i] == ' ')
+            {
+                counter++;
+                i++;
+            }
+            inputCommandWords[counter] += inputCommand[i];
+        }
+
+        /*
+        for(short i = 0; i < 4; i++)
+        {
+            cout << i << ":" << inputCommandWords[i] << " " ;
+        }
+        cout << "\n";
+        */
+        // Change Rooms
+
+        if(inputCommandWords[0] == "n" || inputCommandWords[0] == "s" || inputCommandWords[0] == "e" || inputCommandWords[0] == "w")
+        {
+            changeRoom(inputCommandWords[0]);
+        }
+
+        // Display Inventory
+
+        else if(inputCommandWords[0] == "i")
+        {
+            listInventory();
+        }
+
+        // Take Item
+
+        else if(inputCommandWords[0] == "take")
+        {
+            takeItem(inputCommandWords[1]);
+        }
+
+        // Open Exit
+        
+        else if(inputCommandWords[0] == "open" && inputCommandWords[1] == "exit")
+        {
+            gameOver();
+        }
+        
+        // Open Container
+        
+        else if(inputCommandWords[0] == "open")
+        {
+            openContainer(inputCommandWords[1]);
+        }
+
+        // Read Item
+        else if(inputCommandWords[0] == "read")
+        {
+            readItem(inputCommandWords[1]);
+        }
+
+        // Drop Item
+        else if(inputCommandWords[0] == "drop")
+        {
+            dropItem(inputCommandWords[1]);
+        }
+
+        // put Item
+        else if(inputCommandWords[0] == "put")
+        {
+            putItem(inputCommandWords[1], inputCommandWords[3]);
+        }
+        
+        // Turn on Item
+        else if(inputCommandWords[0] == "turn")
+        {
+            turnonItem(inputCommandWords[2]);
+        }
+        
+        // attack creature
+        else if(inputCommandWords[0] == "attack")
+        {
+            attackCreature(inputCommandWords[1],inputCommandWords[3]);
+        }
+
+        // Behind the scenes add command
+        else if(inputCommandWords[0] == "Add")
+        {
+            add(inputCommand);
+        }
+        // Behind the scenes Delete command
+        else if(inputCommandWords[0] == "Delete")
+        {
+            deleteObject(inputCommand);
+        }
+        // Behind the scenes Update command
+        else if(inputCommandWords[0] == "Update")
+        {
+            update(inputCommand);
+        }
+        // Behind the scenes Game Over command
+        else if(inputCommandWords[0] == "Game" && inputCommandWords[1] == "Over")
+        {
+            gameOver();
+        }
+        else
+        {
+            cout << inputCommand << "\n";
+        }
 }
