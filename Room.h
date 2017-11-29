@@ -18,12 +18,12 @@ class Room
         string description;
         vector<int> RoomBorders;
         vector<int> RoomContainers;
-        vector<int> RoomItems;
         vector<int> RoomCreatures;
-        vector<int> RoomTriggers;
         int deleted = 0;
         
     public:
+        vector<int> RoomTriggers;
+        vector<int> RoomItems;
         Room();
         virtual ~Room();
         void setName(string);

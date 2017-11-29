@@ -13,11 +13,12 @@ class Container
         string status;
         string description;
         vector<string> accept;
-        vector<int> ContainerItems;
-        vector<int> ContainerTriggers;
         int deleted = 0;
 
     public:
+        vector<int> ContainerTriggers;
+        vector<int> ContainerItems;
+        int open = 0;
         Container();
         virtual ~Container();
         void setName(string);

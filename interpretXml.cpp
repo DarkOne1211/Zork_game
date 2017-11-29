@@ -1,4 +1,4 @@
-// NOTE - TRIGGER OBJECTS NOT ADDED AND INTERPRETED (REMOVE COMMENT ONCE ADDED)
+// ACCEPT ELEMETS FOT CONTAINERS
 #include "main.h"
 #include "interpretXml.h"
 #include "Room.h"
@@ -25,6 +25,7 @@ void putItem(string, string);
 void turnonItem(string);
 void attackCreature(string, string);
 void findAction(string);
+int checkTriggers(string);
 
 vector<Room> allRooms;
 vector<Item> allItems;
@@ -583,6 +584,10 @@ void interpretXmlString(std::string gameXml)
 
     // Starting to take user input 
 
+    for(int throughTrigger = 0; throughTrigger < allTriggers.size(); throughTrigger++)
+    {
+        allTriggers[throughTrigger].setCommands("");
+    }
     gameInit();
     
     // TESING IF THE XML HAS BEEN READ PROPERLY(COMMENT OUT WHEN NOT TESTING)
@@ -866,6 +871,7 @@ void update(string updateCommand)
 
 void gameOver()
 {
+    cout << "Game Over\n";
     exit(EXIT_SUCCESS);
 }
 
@@ -960,7 +966,6 @@ void gameInit()
         inputCommandWords[3] = "";
         counter = 0;
         getline(cin, inputCommand);
-        
         for(short i = 0; i < inputCommand.length(); i++)
         {
             if(inputCommand[i] == ' ')
@@ -970,6 +975,10 @@ void gameInit()
             }
             inputCommandWords[counter] += inputCommand[i];
         }
+
+        int override = 0;
+        if(inputCommandWords[0] != "take" || inputCommandWords[0] != "put")
+            override = checkTriggers(inputCommand);
 
         /*
         for(short i = 0; i < 4; i++)
@@ -981,15 +990,17 @@ void gameInit()
         // Change Rooms
 
         if(inputCommandWords[0] == "n" || inputCommandWords[0] == "s" || inputCommandWords[0] == "e" || inputCommandWords[0] == "w")
-        {
-            changeRoom(inputCommandWords[0]);
+        {   
+            if(override != 1)
+                changeRoom(inputCommandWords[0]);
         }
 
         // Display Inventory
 
         else if(inputCommandWords[0] == "i")
         {
-            listInventory();
+            if(override != 1)
+                listInventory();
         }
 
         // Take Item
@@ -997,57 +1008,70 @@ void gameInit()
         else if(inputCommandWords[0] == "take")
         {
             takeItem(inputCommandWords[1]);
+            checkTriggers(inputCommand);
         }
 
         // Open Exit
         
         else if(inputCommandWords[0] == "open" && inputCommandWords[1] == "exit")
         {
-            gameOver();
+            if(allRooms[player.currentRoom].getType() == "exit")
+            {
+                if(override != 1)
+                gameOver();
+            }
+            else
+                cout << "Rooms is not an exit\n";
         }
         
         // Open Container
         
         else if(inputCommandWords[0] == "open")
         {
-            openContainer(inputCommandWords[1]);
+            if(override != 1)
+                openContainer(inputCommandWords[1]);
         }
 
         // Read Item
         else if(inputCommandWords[0] == "read")
         {
-            readItem(inputCommandWords[1]);
+            if(override != 1)
+                readItem(inputCommandWords[1]);
         }
 
         // Drop Item
         else if(inputCommandWords[0] == "drop")
         {
-            dropItem(inputCommandWords[1]);
+            if(override != 1)
+                dropItem(inputCommandWords[1]);
         }
 
         // put Item
         else if(inputCommandWords[0] == "put")
         {
             putItem(inputCommandWords[1], inputCommandWords[3]);
+            checkTriggers(inputCommand);
         }
         
         // Turn on Item
         else if(inputCommandWords[0] == "turn")
         {
-            turnonItem(inputCommandWords[2]);
+            if(override != 1)
+                turnonItem(inputCommandWords[2]);
         }
         
         // attack creature
         else if(inputCommandWords[0] == "attack")
         {
-            attackCreature(inputCommandWords[1],inputCommandWords[3]);
+            if(override != 1)
+                attackCreature(inputCommandWords[1],inputCommandWords[3]);
         }
 
         else
         {
             cout << "Invalid Command\n";
         }
-
+        
     }
 }
 
@@ -1121,9 +1145,47 @@ void takeItem(string itemName)
     if(itemLocation == -1)
     {
         cout << itemName << " does not exist\n";
+        return;
     }
 
-    cout << "Item " << itemName << " added to inventory\n";
+    for(int counter = 0; counter < player.inventory.size(); counter++)
+    {
+        if(itemLocation == player.inventory[counter])
+        {
+            cout << "Item alread in inventory.\n";
+            return;            
+        }
+    }
+
+    int itemFoundinContext = 0;
+    // check if item is in current room
+    for(int test = 0; test < allRooms[player.currentRoom].getRoomItems().size(); test++)
+    {
+        if(itemLocation == allRooms[player.currentRoom].getRoomItems()[test])
+        {
+            itemFoundinContext = 1;
+        }
+    }
+
+    vector<int> currentRoomContainers = allRooms[player.currentRoom].getRoomContainers();
+    int itemFoundinContainerinContext = 0;
+    for(int containerCounter = 0; containerCounter < currentRoomContainers.size(); containerCounter++)
+    {
+        vector<int> itemsinContainer = allContainers[currentRoomContainers[containerCounter]].getContainerItems();
+        for(int itemsinContainerCounter = 0; itemsinContainerCounter < itemsinContainer.size(); itemsinContainerCounter++)
+        {
+            if(itemLocation == itemsinContainer[itemsinContainerCounter])
+            {
+                itemFoundinContainerinContext = 1;
+            }
+        }
+    }
+
+    if(itemFoundinContext == 0 && itemFoundinContainerinContext == 0)
+    {
+        cout << "Item not in this room\n";
+        return;
+    }
 
     // Removing item from Room
     for(int i = 0; i < allRooms.size(); i++)
@@ -1132,8 +1194,7 @@ void takeItem(string itemName)
         {
             if(allRooms[i].getRoomItems()[j] == itemLocation)
             {
-                vector<int> roomLocation = allRooms[i].getRoomItems();
-                roomLocation.erase(roomLocation.begin() + j);
+                allRooms[i].RoomItems.erase(allRooms[i].RoomItems.begin() + j);
             }
         }
     }   
@@ -1145,14 +1206,18 @@ void takeItem(string itemName)
         {
             if(allContainers[i].getContainerItems()[j] == itemLocation)
             {
-                vector<int> containerLocation = allContainers[i].getContainerItems();
-                containerLocation.erase(containerLocation.begin() + j);
+                if(allContainers[i].open == 0)
+                {
+                    cout << "Connot take item. Container closed\n";
+                    return;
+                }
+                allContainers[i].ContainerItems.erase(allContainers[i].ContainerItems.begin() + j);
             }
         }
     }
 
     player.inventory.push_back(itemLocation);
-
+    cout << "Item " << itemName << " added to inventory\n";
 }
 
 void openContainer(string containerName)
@@ -1165,12 +1230,50 @@ void openContainer(string containerName)
         cout<< "Container does not exist\n";
         return;
     }
-
-    cout << containerName << " contains ";
     
+    int containerFoundinContext = 0;
+    for(int test = 0; test < allRooms[player.currentRoom].getRoomContainers().size(); test++)
+    {
+        if(containerLocation == allRooms[player.currentRoom].getRoomContainers()[test])
+            containerFoundinContext = 1;
+    }
+
+    if(containerFoundinContext == 0)
+    {
+        cout << "Container not in the current room";
+        return;
+    }
+
+    if(!allContainers[containerLocation].getAccept().empty())
+    {
+        int acceptElement = -1;
+        vector<string> accept = allContainers[containerLocation].getAccept();
+        for(int k = 0; k < accept.size(); k++)
+        {
+            vector<int> items = allContainers[containerLocation].getContainerItems();
+            for(int m = 0; m < items.size(); m++)
+            {
+                if(allItems[items[m]].getName() == accept[k])
+                    acceptElement = 1;        
+            }
+        }
+
+        if(acceptElement == -1)
+        {
+            cout << "Cannot open the container\n";
+            return;
+        }
+    }
+    if(allContainers[containerLocation].getContainerItems().size() == 0)
+    {
+        cout << containerName << " is empty\n";
+    }
+    cout << containerName << " contains ";
+    allContainers[containerLocation].open = 1;
     for(int i = 0; i < allContainers[containerLocation].getContainerItems().size(); i++)
     {
-        cout << allItems[allContainers[containerLocation].getContainerItems()[i]].getName() << ", ";
+        if(allItems[allContainers[containerLocation].getContainerItems()[i]].getdeleted() == 0)
+            cout << allItems[allContainers[containerLocation].getContainerItems()[i]].getName() << ", ";
     }
     cout << "\b\b" << " \n";
 }
@@ -1194,7 +1297,7 @@ void readItem(string itemName)
     {
         if(allItems[player.inventory[inventoryLocation]].getWriting() == "")
         {
-            cout << "Nothing Writter\n";
+            cout << "Nothing Written\n";
         }
         else
         {
@@ -1250,10 +1353,41 @@ void putItem(string itemName, string containerName)
         containerLocation = findContainerAddress(allContainers, containerName);
         if(containerLocation == -1)
         {
-            cout << "Container does not exist";
+            cout << "Container does not exist\n";
         }
         else
         {
+            vector<int> currentRoomContainers = allRooms[player.currentRoom].getRoomContainers();
+            int containerPresent = -1;
+            for(int x = 0; x < currentRoomContainers.size(); x++)
+            {
+                if(allContainers[currentRoomContainers[x]].getName() == containerName)
+                {
+                    containerPresent = 1;
+                }
+            }
+
+            if(containerPresent == -1)
+            {
+                cout << "Container not present in room\n";
+                return;
+            }
+            
+            if(!allContainers[containerLocation].getAccept().empty())
+            {   
+                int acceptElement = -1;
+                vector<string> acceptItem = allContainers[containerLocation].getAccept();
+                for(int k = 0; k < acceptItem.size(); k++)
+                {
+                    if(acceptItem[k] == itemName)
+                        acceptElement = 1;
+                }
+                if( acceptElement == -1)
+                {
+                    cout << "Cannot put " << itemName << " in " << containerName << "\n";
+                    return;
+                }
+            }
             allContainers[containerLocation].setContainerItems(player.inventory[itemLocationinInv]);
             (player.inventory).erase(player.inventory.begin()+itemLocationinInv);
             cout<< itemName << " added to " << containerName<< "\n";
@@ -1327,12 +1461,35 @@ void attackCreature(string creatureName, string itemName)
         }
         else
         {
+            int creatureinRoom = -1;
+            vector<int> currentRoomCreatures = allRooms[player.currentRoom].getRoomCreatures();
+            for(int y = 0; y < currentRoomCreatures.size(); y++)
+            {
+                if(allCreatures[currentRoomCreatures[y]].getName() == creatureName)
+                {
+                    creatureinRoom = 1;
+                }
+            }
+
+            if(creatureinRoom == -1)
+            {
+                cout << "Creature not in this room\n";
+                return;
+            }
+
+            if(allCreatures[creatureLocation].getdeleted() == 1)
+            {
+                cout << "Error\n";
+                return;
+            }
+
             int attackDone = -1;
             vector<string> vulnerability = allCreatures[creatureLocation].getVulnerability();
             for(int i = 0; i < vulnerability.size(); i++)
             {
                 if(vulnerability[i] == itemName)
                 {
+                    cout << "You attacked " << creatureName << " with " << itemName <<"\n";
                     attackDone = 1;
                     vector<string> attack = allCreatures[creatureLocation].getAttackAction();
                     for(int j = 0; j < attack.size(); j++)
@@ -1345,6 +1502,14 @@ void attackCreature(string creatureName, string itemName)
             if(attackDone == -1)
             {
                 cout << creatureName << " is invulnerable to " << itemName << "\n";
+            }
+
+            if(attackDone == 1)
+            {
+                if(allCreatures[creatureLocation].getCreatureTriggers().empty())
+                {
+                    deleteObject("Delete " + creatureName);
+                }
             }
         }
     }   
@@ -1403,7 +1568,10 @@ void findAction(string inputCommand)
         
         else if(inputCommandWords[0] == "open" && inputCommandWords[1] == "exit")
         {
-            gameOver();
+            if(allRooms[player.currentRoom].getType() == "exit")
+                gameOver();
+            else
+                cout << "Rooms is not an exit\n";
         }
         
         // Open Container
@@ -1467,4 +1635,306 @@ void findAction(string inputCommand)
         {
             cout << inputCommand << "\n";
         }
+}
+
+int checkOwner(int itemLocation, string containerName)
+{
+    if(containerName == "inventory")
+    {
+        for(int i = 0; i < player.inventory.size(); i++)
+        {
+            if(player.inventory[i] == itemLocation)
+                return 1;
+        }
+    }
+    else
+    {
+        int containerLocation = findContainerAddress(allContainers, containerName);
+        vector<int> containerItems = allContainers[containerLocation].getContainerItems();
+        for(int j = 0; j < containerItems.size(); j++)
+        {
+            if(containerItems[j] == itemLocation)
+                return 1;
+        }
+    }
+
+    return 0;
+}
+
+int excuteTrigger(int triggerLocation)
+{
+    Trigger currentTrigger = allTriggers[triggerLocation];
+    vector<string> conditions = currentTrigger.getConditions();
+
+    if(conditions[0] == "no")
+    {
+        int itemLocation = findItemAddress(allItems, conditions[2]);
+        int inOwner = checkOwner(itemLocation, conditions[3]);
+        if(inOwner == 0)
+        {
+        
+            vector<string> prints = currentTrigger.getPrints();
+            for(int i = 0; i < prints.size(); i++)
+            {
+                findAction(prints[i]);
+            }
+
+            vector<string> actions = currentTrigger.getActions();
+            for(int i = 0; i < actions.size(); i++)
+            {
+                findAction(actions[i]);
+            }
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    else if(conditions[0] == "yes")
+    {
+        int itemLocation = findItemAddress(allItems, conditions[2]);
+        int inOwner = checkOwner(itemLocation, conditions[3]);
+        if(inOwner == 1)
+        {
+            
+            vector<string> prints = currentTrigger.getPrints();
+            for(int i = 0; i < prints.size(); i++)
+            {
+                findAction(prints[i]);
+            }
+
+            vector<string> actions = currentTrigger.getActions();
+            for(int i = 0; i < actions.size(); i++)
+            {
+                findAction(actions[i]);
+            }
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        int itemLocation = -1;
+        int containerLocation = -1;
+        int creatureLocation = -1;
+        int test = -1;
+        itemLocation = findItemAddress(allItems, conditions[2]);
+        containerLocation = findContainerAddress(allContainers, conditions[2]);
+        creatureLocation = findCreatureAddress(allCreatures, conditions[2]);
+        
+        if(itemLocation != -1)
+        {
+            if(allItems[itemLocation].getStatus() == conditions[1])
+                test = 1;
+        }
+        else if(containerLocation != -1)
+        {
+            if(allContainers[containerLocation].getStatus() == conditions[1])
+                test = 1;
+        }
+        else if(creatureLocation != -1)
+        {
+            if(allCreatures[creatureLocation].getStatus() == conditions[1])
+                test = 1;
+        }
+        else
+        {
+
+        }
+
+        if(test == 1)
+        {
+        
+            vector<string> prints = currentTrigger.getPrints();
+            for(int i = 0; i < prints.size(); i++)
+            {
+                findAction(prints[i]);
+            }
+
+            vector<string> actions = currentTrigger.getActions();
+            for(int i = 0; i < actions.size(); i++)
+            {
+                findAction(actions[i]);
+            }
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
+
+int checkTriggers(string inputCommand)
+{
+    vector<int> currentRoomItems = allRooms[player.currentRoom].getRoomItems();
+    vector<int> currentRoomCreatures = allRooms[player.currentRoom].getRoomCreatures();
+    vector<int> currentRoomContainers = allRooms[player.currentRoom].getRoomContainers();    
+    vector<int> currentRoomTrigger;
+    vector<int> currentRoomItemTrigger;
+    vector<int> currentRoomCreatureTrigger;
+    vector<int> currentRoomContainerTrigger;
+    int setReturnValue = 0;
+    // Checking Room Triggers
+    if(!allRooms[player.currentRoom].getRoomTriggers().empty())
+    {
+        currentRoomTrigger = allRooms[player.currentRoom].getRoomTriggers();
+        for(int j = 0; j < currentRoomTrigger.size(); j++)
+            {
+                string checkTriggerCommand;
+                int execTrigger = 0;
+                if(allTriggers[currentRoomTrigger[j]].getCommands()[0] != "")
+                {
+                    checkTriggerCommand = allTriggers[currentRoomTrigger[j]].getCommands()[0];
+                }
+                if(checkTriggerCommand == "")
+                {
+                    execTrigger = excuteTrigger(currentRoomTrigger[j]);
+                }
+                else
+                {
+                    if(checkTriggerCommand == inputCommand)
+                    {
+                        setReturnValue = 1;
+                        execTrigger = excuteTrigger(currentRoomTrigger[j]);
+                        return execTrigger;
+                    }
+                    else
+                    {
+                        setReturnValue =  0; 
+                    }
+                }
+                setReturnValue = execTrigger && setReturnValue;
+                if(allTriggers[currentRoomTrigger[j]].getType() == "single" && execTrigger)
+                {
+                    allRooms[player.currentRoom].RoomTriggers.erase(allRooms[player.currentRoom].RoomTriggers.begin() + j);
+                }
+            }
+    }
+
+    // Checking current item Triggers
+    for(int i = 0; i < currentRoomItems.size(); i++)
+    {
+        if((allItems[currentRoomItems[i]].getdeleted() == 0))
+        {
+            currentRoomItemTrigger = allItems[currentRoomItems[i]].getItemTrigger();
+            for(int j = 0; j < currentRoomItemTrigger.size(); j++)
+            {
+                string checkTriggerCommand;
+                int execTrigger = 0;
+                if(allTriggers[currentRoomItemTrigger[j]].getCommands()[0] != "")
+                {
+                    checkTriggerCommand = allTriggers[currentRoomItemTrigger[j]].getCommands()[0];
+                }
+                if(checkTriggerCommand == "")
+                {
+                    execTrigger = excuteTrigger(currentRoomItemTrigger[j]);
+                }
+                else
+                {
+                    if(checkTriggerCommand == inputCommand)
+                    {
+                        setReturnValue = 1;
+                        execTrigger = excuteTrigger(currentRoomItemTrigger[j]);
+                        return execTrigger;
+                    }
+                    else
+                    {
+                        setReturnValue = 0;
+                    }
+                } 
+                setReturnValue = execTrigger && setReturnValue;
+                if(allTriggers[allItems[currentRoomItems[i]].getItemTrigger()[j]].getType() == "single" && execTrigger)
+                {
+                    allItems[currentRoomItems[i]].itemTrigger.erase(allItems[currentRoomItems[i]].itemTrigger.begin() + j);
+                }
+            }
+        }
+    }
+
+    // Checking current creature triggers
+    for(int i = 0; i < currentRoomCreatures.size(); i++)
+    {
+        if(!allCreatures[currentRoomCreatures[i]].getCreatureTriggers().empty() && (allCreatures[currentRoomCreatures[i]].getdeleted() == 0))
+        {
+            currentRoomCreatureTrigger = allCreatures[currentRoomCreatures[i]].getCreatureTriggers();
+            for(int j = 0; j < currentRoomCreatureTrigger.size(); j++)
+            {
+                string checkTriggerCommand;
+                int execTrigger = 0;
+                if(allTriggers[currentRoomCreatureTrigger[j]].getCommands()[0] != "")
+                {
+                    checkTriggerCommand = allTriggers[currentRoomCreatureTrigger[j]].getCommands()[0];
+                }
+                if(checkTriggerCommand == "")
+                {
+                    execTrigger = excuteTrigger(currentRoomCreatureTrigger[j]);
+                }
+                else
+                {
+                    if(checkTriggerCommand == inputCommand)
+                    {
+                        setReturnValue = 1;
+                        execTrigger = excuteTrigger(currentRoomCreatureTrigger[j]);
+                        return execTrigger;
+                    }
+                    else
+                    {
+                        setReturnValue = 0;
+                    }
+                }
+                setReturnValue = execTrigger && setReturnValue;
+                if(allTriggers[allCreatures[currentRoomCreatures[i]].getCreatureTriggers()[j]].getType() == "single" && execTrigger)
+                {
+                    allCreatures[currentRoomCreatures[i]].creatureTriggers.erase(allCreatures[currentRoomCreatures[i]].creatureTriggers.begin() + j);
+                }
+            }
+        }
+    }
+
+    // checking current container triggers
+    for(int i = 0; i < currentRoomContainers.size(); i++)
+    {
+        if(!allContainers[currentRoomContainers[i]].getContainerTriggers().empty() && (allContainers[currentRoomContainers[i]].getdeleted() == 0))
+        {
+            currentRoomContainerTrigger = allContainers[currentRoomContainers[i]].getContainerTriggers();
+            for(int j = 0; j < currentRoomContainerTrigger.size(); j++)
+            {
+                string checkTriggerCommand;
+                int execTrigger = 0;
+                if(allTriggers[currentRoomContainerTrigger[j]].getCommands()[0] != "")
+                {
+                    checkTriggerCommand = allTriggers[currentRoomContainerTrigger[j]].getCommands()[0];
+                }
+                if(checkTriggerCommand == "")
+                {
+                    execTrigger = excuteTrigger(currentRoomContainerTrigger[j]);
+                }
+                else
+                {
+                    if(checkTriggerCommand == inputCommand)
+                    {
+                        setReturnValue = 1;
+                        execTrigger = excuteTrigger(currentRoomContainerTrigger[j]);
+                        return execTrigger;
+                    }
+                    else
+                    {
+                        setReturnValue = 0;
+                    }
+                }
+                setReturnValue = execTrigger && setReturnValue;
+                if(allTriggers[allContainers[currentRoomContainers[i]].getContainerTriggers()[j]].getType() == "single" && execTrigger)
+                {
+                    allContainers[currentRoomContainers[i]].ContainerTriggers.erase(allContainers[currentRoomContainers[i]].ContainerTriggers.begin() + j);
+                }
+            }
+        }
+    }
+    return setReturnValue;
 }

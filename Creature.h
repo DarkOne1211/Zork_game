@@ -14,10 +14,11 @@ class Creature
         string description;
         vector<string> vulnerability;
         vector<string> attackActions;
-        vector<int> creatureTriggers;
         int deleted = 0;
 
     public:
+        
+        vector<int> creatureTriggers;
         Creature();
         virtual ~Creature();
         void setName(string);

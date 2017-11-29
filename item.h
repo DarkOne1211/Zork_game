@@ -12,10 +12,10 @@ class Item
         std::string description;
         std::string writing;
         std::vector<std::string> turnon;
-        std::vector<int> itemTrigger;
         int deleted = 0;
 
     public:
+        std::vector<int> itemTrigger;
         Item();
         virtual ~Item();
         void setName(std::string);
