@@ -464,7 +464,10 @@ void interpretXmlString(std::string gameXml)
             while(RoomContainer != NULL)
             {
                 int newRoomContainer = findContainerAddress(allContainers, RoomContainer->value());
-                newRoom.setRoomContainers(newRoomContainer);
+                if(newRoomContainer != -1)
+                {
+                    newRoom.setRoomContainers(newRoomContainer);
+                }
                 RoomContainer = RoomContainer->next_sibling("container");
             }  
         }
@@ -1440,6 +1443,7 @@ void attackCreature(string creatureName, string itemName)
         }
     }
 
+
     if(itemLocationinInv == -1)
     {
         cout << "Item not in inventory\n";
@@ -1481,6 +1485,16 @@ void attackCreature(string creatureName, string itemName)
             {
                 cout << "Error\n";
                 return;
+            }
+
+            if(creatureName == "gnome")
+            {
+                int explosiveLocation = findItemAddress(allItems, "explosive");
+                if(allItems[explosiveLocation].getStatus() != "ticking")
+                {
+                    cout << "Attack had no effect\n";
+                    return;
+                }
             }
 
             int attackDone = -1;
